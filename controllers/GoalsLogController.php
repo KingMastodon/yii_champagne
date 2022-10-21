@@ -4,6 +4,8 @@ namespace app\controllers;
 
 use app\models\GoalsLog;
 use app\models\GoalsLogSearch;
+use app\models\GoalsApis;
+use Symfony\Component\VarDumper\Cloner\Data;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -40,10 +42,11 @@ class GoalsLogController extends Controller
     {
         $searchModel = new GoalsLogSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
-
+        $apisList = GoalsApis::find()->indexBy('id')->select('base_url')->column();
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'apisList' => $apisList
         ]);
     }
 
@@ -69,6 +72,8 @@ class GoalsLogController extends Controller
     {
         $model = new GoalsLog();
         $model->created_at = time();
+        $model->status = GoalsLog::STATUS_NOT_APPROVED;
+
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
                 return $this->redirect(['view', 'id' => $model->id]);
@@ -132,8 +137,12 @@ class GoalsLogController extends Controller
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 
-    public function actionSetApproved($id)
+    public function actionSetApproved($goalId, $apiId)
     {
+        $goalsLogModel = GoalsLog::findOne(['id' => $goalId]);
+        $goalsLogModel->data_provider = $apiId;
+        $goalsLogModel->status = GoalsLog::STATUS_APPROVED;
+        $goalsLogModel->save();
         print_r('asd');
         return 'hello';
     }

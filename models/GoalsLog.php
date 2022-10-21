@@ -16,6 +16,15 @@ use Yii;
  */
 class GoalsLog extends \yii\db\ActiveRecord
 {
+    
+    const STATUS_NOT_APPROVED = 0;
+    const STATUS_APPROVED = 1;
+
+    const STATUS_MAP = [
+        self::STATUS_NOT_APPROVED => 'создан',
+        self::STATUS_APPROVED => 'подтвержден',
+    ];
+    
     /**
      * {@inheritdoc}
      */
@@ -30,8 +39,9 @@ class GoalsLog extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['created_at', 'price', 'data_provider', 'status'], 'integer'],
-            [['created_at', 'price', 'data_provider', 'status'], 'required'],
+            [['created_at', 'price', 'status','data_provider'], 'integer'],
+            ['data_provider',  'default', 'value' => null],
+            [['created_at', 'price', 'status'], 'required'],
             [['goal'], 'string'],
             [['goal'], 'required'],
         ];

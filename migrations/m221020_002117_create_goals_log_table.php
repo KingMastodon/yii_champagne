@@ -17,7 +17,7 @@ class m221020_002117_create_goals_log_table extends Migration
             'created_at' => $this->integer(11),
             'goal' => $this->text()->notNull(),
             'price' => $this->integer(11)->notNull(),
-            'data_provider' => $this->integer(5)->notNull(),
+            'data_provider' => $this->integer(5),
             'status' => $this->integer(2)->notNull()
         ]);
     }

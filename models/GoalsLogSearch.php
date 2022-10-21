@@ -66,7 +66,7 @@ class GoalsLogSearch extends GoalsLog
         ]);
 
         $query->andFilterWhere(['like', 'goal', $this->goal]);
-
+        
         return $dataProvider;
     }
 }
