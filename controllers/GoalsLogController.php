@@ -5,6 +5,7 @@ namespace app\controllers;
 use app\models\GoalsLog;
 use app\models\GoalsLogSearch;
 use app\models\GoalsApis;
+use app\models\GoalApiProvider;
 use Symfony\Component\VarDumper\Cloner\Data;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -76,7 +77,7 @@ class GoalsLogController extends Controller
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+                return $this->redirect(['index']);
             }
         } else {
             $model->loadDefaultValues();
@@ -99,7 +100,7 @@ class GoalsLogController extends Controller
         $model = $this->findModel($id);
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+            return $this->redirect(['index']);
         }
 
         return $this->render('update', [
@@ -140,10 +141,13 @@ class GoalsLogController extends Controller
     public function actionSetApproved($goalId, $apiId)
     {
         $goalsLogModel = GoalsLog::findOne(['id' => $goalId]);
+        
         $goalsLogModel->data_provider = $apiId;
         $goalsLogModel->status = GoalsLog::STATUS_APPROVED;
         $goalsLogModel->save();
-        print_r('asd');
-        return 'hello';
+        $goalsApisModel = GoalsApis::findOne(['id' => $apiId]);
+        $goalApiProvider = new GoalApiProvider($goalsApisModel, $goalsLogModel);
+        $goalApiProvider->createHttpClientRequest();
+        return $this->redirect(['index']);
     }
 }
